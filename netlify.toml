@@ -1,12 +1,11 @@
 [build]
-  command = "cd client && npm install && npm run build"
+  # Patch client/src/utils/api.js at build time to avoid calling users' localhost
+  # (the client lives in a submodule and isn't pushed here). This replaces the
+  # default localhost base URL with a relative `/api` before installing and
+  # building.
+  command = "cd client && if [ -f src/utils/api.js ]; then sed -i 's|http://localhost:5000/api|/api|g' src/utils/api.js; fi && npm install && npm run build"
   publish = "client/build"
   base = "."
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
 
 [[redirects]]
   from = "/*"
